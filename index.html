@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeu de Clic Rapide</title>
+  <style>
+    /* Style global du corps de la page */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    #score, #timer {
+      font-size: 1.2em;
+      margin: 5px;
+      color: #222;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 90vw;
+      height: 60vh;
+      border: 2px solid #444;
+      margin-top: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #clickButton {
+      position: absolute;
+      padding: 15px 25px;
+      background-color: #ff7f50;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    #clickButton:hover {
+      background-color: #ff6347;
+    }
+
+    #startButton {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+
+    #startButton:hover {
+      background-color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Jeu de Clic Rapide</h1>
+  <div id="score">Score : 0</div>
+  <div id="timer">Temps restant : 30s</div>
+
+  <div id="gameArea">
+    <!-- Bouton de jeu (caché au début) -->
+    <button id="clickButton" style="display: none;">Clique-moi !</button>
+  </div>
+
+  <!-- Bouton de démarrage / redémarrage -->
+  <button id="startButton">Démarrer le jeu</button>
+
+  <script>
+    // Récupération des éléments HTML
+    const clickButton = document.getElementById("clickButton");
+    const startButton = document.getElementById("startButton");
+    const scoreDisplay = document.getElementById("score");
+    const timerDisplay = document.getElementById("timer");
+    const gameArea = document.getElementById("gameArea");
+
+    let score = 0;
+    let timeLeft = 30;
+    let gameInterval, timerInterval;
+
+    // Fonction pour déplacer le bouton à un emplacement aléatoire
+    function moveButton() {
+      const areaWidth = gameArea.clientWidth;
+      const areaHeight = gameArea.clientHeight;
+      const btnWidth = clickButton.offsetWidth;
+      const btnHeight = clickButton.offsetHeight;
+
+      const maxX = areaWidth - btnWidth;
+      const maxY = areaHeight - btnHeight;
+
+      const randomX = Math.random() * maxX;
+      const randomY = Math.random() * maxY;
+
+      clickButton.style.left = `${randomX}px`;
+      clickButton.style.top = `${randomY}px`;
+    }
+
+    // Fonction appelée à chaque clic sur le bouton de jeu
+    clickButton.onclick = () => {
+      score++;
+      scoreDisplay.textContent = `Score : ${score}`;
+      moveButton();
+    };
+
+    // Fonction pour démarrer le jeu
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      scoreDisplay.textContent = `Score : ${score}`;
+      timerDisplay.textContent = `Temps restant : ${timeLeft}s`;
+      clickButton.style.display = "block";
+      moveButton();
+
+      // Déplacement du bouton toutes les 800ms
+      gameInterval = setInterval(moveButton, 800);
+
+      // Timer décrémenté chaque seconde
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `Temps restant : ${timeLeft}s`;
+
+        if (timeLeft <= 0) {
+          clearInterval(gameInterval);
+          clearInterval(timerInterval);
+          clickButton.style.display = "none";
+          alert(`Temps écoulé ! Votre score est ${score}`);
+        }
+      }, 1000);
+    }
+
+    // Événement clic sur le bouton "Démarrer"
+    startButton.onclick = () => {
+      clearInterval(gameInterval);
+      clearInterval(timerInterval);
+      startGame();
+    };
+  </script>
+</body>
+</html>
